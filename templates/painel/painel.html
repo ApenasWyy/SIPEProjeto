@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESTUDO — Planner</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --sidebar: #0d0d0d;
+      --card: #141414;
+      --border: #1f1f1f;
+      --text: #e8e8e8;
+      --text-muted: #888;
+      --text-dim: #555;
+      --accent-yellow: #e8c547;
+      --accent-cyan: #2dd4bf;
+      --accent-red: #f87171;
+      --accent-purple: #a78bfa;
+      --accent-orange: #fb923c;
+      --accent-green: #4ade80;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 12px;
+      flex-shrink: 0;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .logo { padding: 0 8px 24px; }
+    .logo-title { font-size: 18px; font-weight: 700; letter-spacing: 1px; color: var(--accent-yellow); }
+    .logo-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 1.5px; margin-top: 2px; }
+
+    .nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      border: 1px solid transparent;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+    .nav-item.active {
+      background: rgba(232, 197, 71, 0.08);
+      color: var(--accent-yellow);
+      border-color: rgba(232, 197, 71, 0.35);
+    }
+
+    .nav-item.active.cyan {
+      background: rgba(45, 212, 191, 0.08);
+      color: var(--accent-cyan);
+      border-color: rgba(45, 212, 191, 0.35);
+    }
+
+    .nav-item svg { width: 18px; height: 18px; opacity: 0.8; flex-shrink: 0; }
+
+    .nav-divider { height: 1px; background: var(--border); margin: 12px 8px; }
+
+    .user-card {
+      margin-top: auto;
+      padding: 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 14px; color: var(--text-muted);
+    }
+
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .user-role { font-size: 11px; color: var(--text-dim); }
+
+    /* Main */
+    .main {
+      flex: 1;
+      padding: 28px 32px;
+      overflow-y: auto;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-header { margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .page-title { font-size: 28px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .page-title span { color: var(--accent-yellow); }
+    .page-title span.cyan { color: var(--accent-cyan); }
+    .page-subtitle { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 18px 20px;
+      border-top: 3px solid;
+    }
+
+    .stat-card.yellow { border-color: var(--accent-yellow); }
+    .stat-card.cyan { border-color: var(--accent-cyan); }
+    .stat-card.red { border-color: var(--accent-red); }
+    .stat-card.purple { border-color: var(--accent-purple); }
+
+    .stat-label { font-size: 11px; letter-spacing: 0.8px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 600; line-height: 1.1; }
+    .stat-value small { font-size: 16px; font-weight: 400; color: var(--text-muted); }
+    .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+
+    /* Panels */
+    .panel {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px 22px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .panel-title { font-size: 15px; font-weight: 600; margin-bottom: 18px; color: var(--text); }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+
+    .empty-state svg {
+      width: 40px; height: 40px;
+      margin-bottom: 12px;
+      opacity: 0.35;
+    }
+
+    .empty-state p { margin-bottom: 4px; }
+    .empty-state span { font-size: 13px; }
+
+    /* Button */
+    .btn-nova {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-cyan);
+      color: #0a0a0a;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-nova:hover { opacity: 0.9; }
+
+    /* Materias grid */
+    .materias-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    /* Cronômetro */
+    .timer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .timer-display {
+      font-size: 72px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: var(--text);
+      margin-bottom: 32px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-timer {
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+
+    .btn-timer:hover { opacity: 0.9; }
+    .btn-timer.primary { background: var(--accent-cyan); color: #0a0a0a; }
+    .btn-timer.secondary { background: #1a1a1a; color: var(--text); border: 1px solid var(--border); }
+
+    /* Perfil */
+    .perfil-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 32px;
+      border: 1px solid var(--border);
+      max-width: 480px;
+    }
+
+    .perfil-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 600; color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .perfil-field { margin-bottom: 16px; }
+    .perfil-field label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .perfil-field .value { font-size: 15px; color: var(--text); }
+
+    /* Responsive */
+    @media (max-width: 1000px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .materias-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .main { padding: 20px 16px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .materias-grid { grid-template-columns: 1fr; }
+      .page-header { flex-direction: column; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-title">ESTUDO</div>
+      <div class="logo-sub">PLANNER // 2026</div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-page="painel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Painel
+      </button>
+      <button class="nav-item" data-page="materias">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Matérias
+      </button>
+      <button class="nav-item" data-page="cronograma">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Cronograma
+      </button>
+      <button class="nav-item" data-page="cronometro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Cronômetro
+      </button>
+
+      <div class="nav-divider"></div>
+
+      <button class="nav-item" data-page="perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Perfil
+      </button>
+    </nav>
+
+    <div class="user-card">
+      <div class="avatar">—</div>
+      <div class="user-info">
+        <div class="user-name">Usuário</div>
+        <div class="user-role">Sem curso definido</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ========== PAINEL ========== -->
+    <div class="page active" id="page-painel">
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Painel <span>_</span></h1>
+          <p class="page-subtitle">Visão geral do seu progresso</p>
+        </div>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card yellow">
+          <div class="stat-label">Horas esta semana</div>
+          <div class="stat-value">0<small>h</small></div>
+          <div class="stat-sub">— vs semana anterior</div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-label">Sessões realizadas</div>
+          <div class="stat-value">0</div>
+          <div class="stat-sub">nos últimos 7 dias</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Metas cumpridas</div>
+          <div class="stat-value">0/0</div>
+          <div class="stat-sub">0% de conclusão</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Sequência atual</div>
+          <div class="stat-value">0 <small>dias</small></div>
+          <div class="stat-sub">comece a estudar!</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Progresso por Matéria</h2>
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          <p>Nenhuma matéria cadastrada</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Sessões Recentes</h2>
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <p>Nenhuma sessão realizada</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MATÉRIAS ========== -->
+    <div class="page" id="page-materias">
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Matérias <span class="cyan">_</span></h1>
+          <p class="page-subtitle">0 matérias cadastradas</p>
+        </div>
+        <button class="btn-nova">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova Matéria
+        </button>
+      </header>
+
+      <div class="materias-grid">
+        <div class="empty-state" style="grid-column: 1 / -1; padding: 80px 20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px;">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          <p>Nenhuma matéria cadastrada</p>
+          <span>Clique em “+ Nova Matéria” para começar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CRONOGRAMA ========== -->
+    <div class="page" id="page-cronograma">
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Cronograma <span>_</span></h1>
+          <p class="page-subtitle">Organize seus estudos</p>
+        </div>
+      </header>
+
+      <div class="panel">
+        <div class="empty-state" style="padding: 80px 20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px;">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <p>Nenhum evento no cronograma</p>
+          <span>Adicione matérias e sessões para montar seu plano</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CRONÔMETRO ========== -->
+    <div class="page" id="page-cronometro">
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Cronômetro <span>_</span></h1>
+          <p class="page-subtitle">Foque nos seus estudos</p>
+        </div>
+      </header>
+
+      <div class="panel">
+        <div class="timer-container">
+          <div class="timer-display" id="timer-display">00:00:00</div>
+          <div class="timer-controls">
+            <button class="btn-timer primary" id="btn-start">Iniciar</button>
+            <button class="btn-timer secondary" id="btn-reset">Zerar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PERFIL ========== -->
+    <div class="page" id="page-perfil">
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Perfil <span>_</span></h1>
+          <p class="page-subtitle">Suas informações</p>
+        </div>
+      </header>
+
+      <div class="perfil-card">
+        <div class="perfil-avatar">—</div>
+        <div class="perfil-field">
+          <label>Nome</label>
+          <div class="value">Usuário</div>
+        </div>
+        <div class="perfil-field">
+          <label>Curso</label>
+          <div class="value">Sem curso definido</div>
+        </div>
+        <div class="perfil-field">
+          <label>Meta semanal</label>
+          <div class="value">0h</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Navegação entre abas
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page');
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const pageId = item.dataset.page;
+
+        // Atualiza nav
+        navItems.forEach(n => {
+          n.classList.remove('active', 'cyan');
+        });
+        item.classList.add('active');
+        if (pageId === 'materias') item.classList.add('cyan');
+
+        // Atualiza páginas
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + pageId).classList.add('active');
+      });
+    });
+
+    // Cronômetro simples
+    let seconds = 0;
+    let interval = null;
+    const display = document.getElementById('timer-display');
+    const btnStart = document.getElementById('btn-start');
+    const btnReset = document.getElementById('btn-reset');
+
+    function formatTime(s) {
+      const h = String(Math.floor(s / 3600)).padStart(2, '0');
+      const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+      const sec = String(s % 60).padStart(2, '0');
+      return `${h}:${m}:${sec}`;
+    }
+
+    btnStart.addEventListener('click', () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+        btnStart.textContent = 'Iniciar';
+      } else {
+        interval = setInterval(() => {
+          seconds++;
+          display.textContent = formatTime(seconds);
+        }, 1000);
+        btnStart.textContent = 'Pausar';
+      }
+    });
+
+    btnReset.addEventListener('click', () => {
+      clearInterval(interval);
+      interval = null;
+      seconds = 0;
+      display.textContent = '00:00:00';
+      btnStart.textContent = 'Iniciar';
+    });
+  </script>
+</body>
+</html>

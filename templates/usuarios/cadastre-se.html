@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - SIPE</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --yellow: #f5c542;
+            --yellow-hover: #e6b635;
+            --bg: #0a0a0a;
+            --card-bg: #111111;
+            --border: #222;
+            --text-muted: #888;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: #fff;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ===== PAINEL ESQUERDO ===== */
+        .info-panel {
+            flex: 1;
+            background: linear-gradient(160deg, #0d0d0d 0%, #111 100%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand { margin-bottom: 2.5rem; }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--yellow);
+            letter-spacing: 1px;
+        }
+
+        .brand-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .info-panel h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 1rem;
+        }
+
+        .info-panel h2 span { color: var(--yellow); }
+
+        .info-panel > p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.65;
+            margin-bottom: 2rem;
+            max-width: 380px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.1rem;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .info-list li i {
+            color: var(--yellow);
+            font-size: 1.1rem;
+            margin-top: 2px;
+        }
+
+        .info-footer {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 3.5rem;
+            font-size: 0.75rem;
+            color: #555;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.45;
+            pointer-events: none;
+        }
+        .s1 { width: 14px; height: 14px; background: #2dd4bf; border-radius: 50%; top: 12%; right: 18%; }
+        .s2 { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 16px solid #14b8a6; top: 18%; right: 10%; }
+        .s3 { width: 22px; height: 22px; border: 2px solid #a78bfa; transform: rotate(45deg); bottom: 28%; right: 16%; }
+        .s4 { width: 32px; height: 3px; background: #c084fc; transform: rotate(-30deg); bottom: 22%; right: 8%; }
+        .s5 { width: 16px; height: 16px; background: #f43f5e; border-radius: 50%; top: 10%; right: 6%; opacity: 0.35; }
+        .s6 { width: 14px; height: 14px; background: var(--yellow); transform: rotate(45deg); top: 28%; right: 4%; }
+
+        /* ===== FORMULÁRIO (direita) ===== */
+        .form-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: var(--bg);
+            overflow-y: auto;
+        }
+
+        .register-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            padding: 2.25rem 2.25rem;
+            width: 100%;
+            max-width: 420px;
+            animation: fadeUp 0.5s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .register-card h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+        }
+
+        .register-card h1 span { color: var(--yellow); }
+
+        .register-card .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #ccc;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-control {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #fff;
+            border-radius: 0.6rem;
+            padding: 0.65rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            background: #1a1a1a;
+            border-color: var(--yellow);
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.15);
+        }
+
+        .form-control::placeholder { color: #555; }
+
+        .btn-show-pass {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-left: none;
+            color: #888;
+            border-radius: 0 0.6rem 0.6rem 0;
+            padding: 0 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-show-pass:hover { color: var(--yellow); }
+
+        .form-check-label {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .form-check-label a {
+            color: var(--yellow);
+            text-decoration: none;
+        }
+
+        .form-check-label a:hover { text-decoration: underline; }
+
+        .form-check-input {
+            background-color: #1a1a1a;
+            border-color: #333;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--yellow);
+            border-color: var(--yellow);
+        }
+
+        .btn-submit {
+            background: var(--yellow);
+            border: none;
+            color: #000;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.75rem;
+            border-radius: 0.6rem;
+            width: 100%;
+            transition: all 0.2s ease;
+            margin-top: 0.35rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--yellow-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(245, 197, 66, 0.25);
+        }
+
+        .bottom-text {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 1.35rem;
+        }
+
+        .bottom-text a {
+            color: var(--yellow);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .bottom-text a:hover { text-decoration: underline; }
+
+        .mb-3 { margin-bottom: 0.9rem !important; }
+
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .info-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 2rem 1.75rem;
+            }
+            .info-footer { position: static; margin-top: 2rem; }
+            .form-area { padding: 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== ESQUERDA: Boas-vindas ===== -->
+    <div class="info-panel">
+        <div class="shape s1"></div>
+        <div class="shape s2"></div>
+        <div class="shape s3"></div>
+        <div class="shape s4"></div>
+        <div class="shape s5"></div>
+        <div class="shape s6"></div>
+
+
+    <!-- ===== DIREITA: Formulário ===== -->
+    <div class="form-area">
+        <div class="register-card">
+            <h1>Criar Conta<span>.</span></h1>
+            <p class="subtitle">Preencha os dados para se cadastrar</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome completo</label>
+                    <input type="text" class="form-control" id="nome" name="nome"
+                           placeholder="Seu nome completo" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Usuário</label>
+                    <input type="text" class="form-control" id="username" name="username"
+                           placeholder="Escolha um nome de usuário" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="email" name="email"
+                           placeholder="seu@email.com" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Senha</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" name="password"
+                               placeholder="Crie uma senha" required
+                               style="border-radius: 0.6rem 0 0 0.6rem; border-right: none;">
+                        <button class="btn-show-pass" type="button" id="btnVerSenha">
+                            <i class="bi bi-eye" id="iconeOlho"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password2" class="form-label">Confirmar senha</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password2" name="password2"
+                               placeholder="Repita a senha" required
+                               style="border-radius: 0.6rem 0 0 0.6rem; border-right: none;">
+                        <button class="btn-show-pass" type="button" id="btnVerSenha2">
+                            <i class="bi bi-eye" id="iconeOlho2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="termos" name="termos" required>
+                    <label class="form-check-label" for="termos">
+                        Eu concordo com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-person-plus"></i> Criar conta
+                </button>
+            </form>
+
+            <p class="bottom-text">
+                Já tem uma conta? <a href="{% url 'login' %}">Fazer login</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSenha(btnId, inputId, iconeId) {
+            document.getElementById(btnId).addEventListener('click', function () {
+                const input = document.getElementById(inputId);
+                const icone = document.getElementById(iconeId);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icone.classList.replace('bi-eye', 'bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icone.classList.replace('bi-eye-slash', 'bi-eye');
+                }
+            });
+        }
+        toggleSenha('btnVerSenha', 'password', 'iconeOlho');
+        toggleSenha('btnVerSenha2', 'password2', 'iconeOlho2');
+    </script>
+</body>
+</html>

@@ -1,6 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
 def index(request):
     return render(request, 'usuarios/usuarios.html')
-# Create your views here.
+
+def login_usuario(request):
+    return render(request, 'usuarios/usuarios.html')
+
+def cadastro_usuario(request):
+    return render(request, 'usuarios/cadastre-se.html')
