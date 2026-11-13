@@ -3,7 +3,10 @@
 O projeto foi pensado para facilitar o processo de planejamento de estudos já proposto pela ETEP, que é ofertado de maneira física, ou seja, através de papel e caneta. Atualmente funciona da seguinte maneira: o aluno precisa deslocar-se para o setor e, estando lá, ele conversa sobre sua situação. Depois, lhe é proposto um planner para que possa organizar melhor sua rotina de estudos, com auxílio da equipe do setor.
 
 # Objetivos
-
+* Facilitar o processo de planejamento de estudos, adaptando-o a rotina e as necessidades do usuário;
+* Dinamizar os estudos;
+* Auxiliar na organização da rotina.
+  
 # Funcionalidades
 As funcionalidades adicionada no projeto são -
 * painel inicial onde o usuáio pode visualizar suas atividades no apicativo, como horas semanais no aplicaitivo, as sessões realizadas que são as atividades que ele cadastrou e realizou, metas cumpridas que são as atividades cadastradas realizadas progresso de matérias.
