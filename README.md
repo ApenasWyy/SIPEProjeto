@@ -17,7 +17,7 @@ As funcionalidades adicionada no projeto são -
   
 # Tecnologias utilizadas:
 * linguagens de programação (Python)
-* estilização (HTML, CSS)
+* estilização (HTML, CSS, Java Script)
 * frameworks (Django)
 
 # Pré-requisitos:
